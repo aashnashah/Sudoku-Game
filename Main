@@ -1,0 +1,31 @@
+package com.company;
+
+//********************************************************************
+//  Main.java       Author: Aashna Shah
+//
+//  This is the driver class for the entire project.
+//********************************************************************
+import java.io.*;
+import java.util.*;
+import java.lang.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.applet.Applet;
+
+
+public class Main
+{
+    public static void main ( String[] args)
+    {
+
+        //A JFrame is created, it calls the GUI constructor and creates the initial gui
+        JFrame frame = new JFrame ("Start Game");
+
+        frame.getContentPane().add(new GUI("run"));
+
+        frame.pack();
+        frame.setVisible(true);
+
+    }
+}
