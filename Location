@@ -1,0 +1,78 @@
+package com.company;
+//********************************************************************
+//  Location.java       Author: Aashna Shah
+//
+//  This is the standalone Location class. This creates an location(x,y) object and has methods related to it
+//********************************************************************
+
+import java.lang.*;
+import java.util.*;
+import java.util.Collections;
+
+public class Location
+{
+    //the various instance variables are declared
+    int a, b;
+
+    ArrayList <Integer> locNums = new ArrayList <Integer> (9);
+    //==============================================================================================================================================
+    //this is the basic constructor which instantiates all the variables to their default
+    public Location ()
+    {
+        a = 0;
+        b = 0;
+    }
+
+    //==============================================================================================================================================
+//this is the locations constructor which takes two integers as a parameter and creates a location object
+    public Location (int x, int y)
+    {
+        a = x;
+        b = y;
+        add();
+    }
+
+    //==============================================================================================================================================
+    //this is the method which the constructor calls and adds 1-9 to the arrayList
+    public void add()
+    {
+        locNums.add(1);
+        locNums.add(2);
+        locNums.add(3);
+        locNums.add(4);
+        locNums.add(5);
+        locNums.add(6);
+        locNums.add(7);
+        locNums.add(8);
+        locNums.add(9);
+    }
+
+    //==============================================================================================================================================
+//this is the remove method which removes x from the arraylist of this location
+    public void remove(int x)
+    {
+        locNums.remove(x);
+    }
+
+    //==============================================================================================================================================
+    //this returns the arraylIst of that particular location
+    public ArrayList<Integer> getAL()
+    {
+        return locNums;
+    }
+
+
+    //==============================================================================================================================================
+//this is the boolean method which checks if two locations are equal
+    public boolean equals (int x, int y)
+    {
+        boolean equal = false;
+
+        if(a == x && b == y)
+        {
+            equal = true;
+        }
+        return equal;
+    }
+//==============================================================================================================================================
+}
