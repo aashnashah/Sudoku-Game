@@ -1,0 +1,813 @@
+package com.company;
+
+//********************************************************************
+//  Sudoku.java       Author: Aashna Shah
+//
+//  This is the standalone Sudoku class. It implements various methods relating to a sudoku grid
+//********************************************************************
+
+
+import java.lang.*;
+import java.util.*;
+
+public class Sudoku
+{
+    //the various instance variables are declared
+    int r, c, x, y, numIndex, g, locIndex;
+    Location loca;
+
+    //two 2D arrays, one representing the actual game and one representing the answer are created
+    int [][] nGame = new int [9][9];
+    int [][] nGameAnswer = new int [9][9];
+
+    //two arraylists, one a list of the openSpace and another a list of random numbers are created
+    ArrayList <Location> oSpace = new ArrayList <Location>();
+    ArrayList <Integer> numList = new ArrayList <Integer>();
+
+
+    //this is the basic constructor which instantiates all the variables to their default
+    public Sudoku()
+    {
+        loca = new Location();
+        locIndex =0;
+        g = 0;
+        numIndex = 0;
+        r = 0;
+        c = 0;
+        x = 0;
+        y = 0;
+    }
+
+    //this is the Sudoku constructor which takes a string as a parameter and creates a sudoku object
+    public Sudoku(String stringyy)
+    {
+        int [][] nGame = new int [9][9];
+        int [][] nGameAnswer = new int [9][9];
+
+        ArrayList <Location> oSpace = new ArrayList <Location>();
+        ArrayList <Integer> numList = new ArrayList <Integer>();
+    }
+
+    //=============================================================================================================================================
+    //this is the method which takes 3 integer parameters. In the places the answer parameter at location x,y in the nGame 2d array
+    public void setNum(int x, int y, int answer)
+    {
+        nGame[x][y] = answer;
+    }
+
+    //=============================================================================================================================================
+//this is the method which takes 2 integer parameters. It returns the number at location x,y in the nGame 2d array
+    public int getNum(int x, int y)
+    {
+        return nGame[x][y];
+    }
+
+    //=============================================================================================================================================
+    //this is the method which takes 2 integer parameters. It returns the answer key number at location x,y in the nGameAnswer 2d array
+    public int getNumAnswer(int x, int y)
+    {
+        return nGameAnswer[x][y];
+    }
+    //=============================================================================================================================================
+//This method randomly selects numbers between 1-9 inclusive and adds them to numList arrayList
+    public void selectNums()
+    { int x = 0;
+        int num = 0;
+        for(int y = 0; y < 200; y++)
+        {
+            Random r = new Random();
+            num = ((r.nextInt(9)) + 1);
+            if(x < 9)
+            {
+                if(numList.contains(num) == false)
+                {
+                    numList.add(num);
+                    x++;
+                }
+            }
+        }
+    }
+    //==============================================================================================================================================
+    //this is the RECURSIVE METHOD which uses numbers from numList and locations from oSpace to create a working sudoku grid
+    public void placeNums(int num, int locationP)
+    {
+
+        locIndex = locationP;
+        numIndex = num;
+
+        if (locIndex < 9)
+        {
+            loca = oSpace.get(locIndex);
+
+            x = numList.get(numIndex);
+
+            if (nGameAnswer[loca.a][loca.b] == 0)
+            {
+                editArray(loca);
+
+                if(nGameAnswer[loca.a][loca.b] == 0)
+                {
+
+                    if (checkRow(loca,x) == false && checkColumn(loca,x) == false && checkBox(loca,x) == false
+                            && checkNRows(loca,x) == true && checkNCols(loca,x)== true)
+                    {
+                        nGameAnswer[loca.a][loca.b] = x;
+                        nGame[loca.a][loca.b] = x;
+
+                        placeSpecific(loca);
+
+                    }
+                    else if (checkRow(loca,x) == false && checkColumn(loca,x) == false && checkBox(loca,x) == false)
+                    {
+                        nGameAnswer[loca.a][loca.b] = x;
+                        nGame[loca.a][loca.b] = x;
+
+                        placeSpecific(loca);
+
+                    }
+                }
+            }
+            placeNums(numIndex+1, locIndex+1);
+        }
+    }
+
+
+
+    //==============================================================================================================================================
+    //this is a method which the placeNums() method calls. It places numbers at
+    //other locations in the grid accoridng to the  numbers which are already filled out
+    public void placeSpecific(Location loca)
+    {
+        //if the location is 0,0 then certain other locations are also set to the same number
+        if( loca.equals(0,0))
+        {
+            nGameAnswer[1][6] = nGameAnswer[0][0];
+            nGameAnswer[2][3] = nGameAnswer[0][0];
+            nGameAnswer[3][8] = nGameAnswer[0][0];
+            nGameAnswer[4][5] = nGameAnswer[0][0];
+            nGameAnswer[5][2] = nGameAnswer[0][0];
+            nGameAnswer[6][7] = nGameAnswer[0][0];
+            nGameAnswer[7][4] = nGameAnswer[0][0];
+            nGameAnswer[8][1] = nGameAnswer[0][0];
+
+            nGame[1][6] = nGame[0][0];
+            nGame[2][3] = nGame[0][0];
+            nGame[3][8] = nGame[0][0];
+            nGame[4][5] = nGame[0][0];
+            nGame[5][2] = nGame[0][0];
+            nGame[6][8] = nGame[0][0];
+            nGame[7][4] = nGame[0][0];
+            nGame[8][1] = nGame[0][0];
+        }
+        //if the location is 0,1 then certain other locations are also set to the same number
+        else if(loca.equals(0,1))
+        {
+            nGameAnswer[1][7] = nGameAnswer[0][1];
+            nGameAnswer[2][4] = nGameAnswer[0][1];
+            nGameAnswer[3][0] = nGameAnswer[0][1];
+            nGameAnswer[4][6] = nGameAnswer[0][1];
+            nGameAnswer[5][3] = nGameAnswer[0][1];
+            nGameAnswer[6][8] = nGameAnswer[0][1];
+            nGameAnswer[7][5] = nGameAnswer[0][1];
+            nGameAnswer[8][2] = nGameAnswer[0][1];
+
+            nGame[1][7] = nGame[0][1];
+            nGame[2][4] = nGame[0][1];
+            nGame[3][0] = nGame[0][1];
+            nGame[4][6] = nGame[0][1];
+            nGame[5][3] = nGame[0][1];
+            nGame[6][8] = nGame[0][1];
+            nGame[7][5] = nGame[0][1];
+            nGame[8][2] = nGame[0][1];
+        }
+        //if the location is 0,2 then certain other locations are also set to the same number
+        else if(loca.equals(0,2))
+        {
+            nGameAnswer[1][8] = nGameAnswer[0][2];
+            nGameAnswer[2][5] = nGameAnswer[0][2];
+            nGameAnswer[3][1] = nGameAnswer[0][2];
+            nGameAnswer[4][7] = nGameAnswer[0][2];
+            nGameAnswer[5][4] = nGameAnswer[0][2];
+            nGameAnswer[6][0] = nGameAnswer[0][2];
+            nGameAnswer[7][6] = nGameAnswer[0][2];
+            nGameAnswer[8][3] = nGameAnswer[0][2];
+
+
+            nGame[1][8] = nGame[0][2];
+            nGame[2][5] = nGame[0][2];
+            nGame[3][1] = nGame[0][2];
+            nGame[4][7] = nGame[0][2];
+            nGame[5][4] = nGame[0][2];
+            nGame[6][0] = nGame[0][2];
+            nGame[7][6] = nGame[0][2];
+            nGame[8][3] = nGame[0][2];
+
+
+        }
+        //if the location is 0,3 then certain other locations are also set to the same number
+        else if(loca.equals(0,3))
+        {
+            nGameAnswer[1][0] = nGameAnswer[0][3];
+            nGameAnswer[2][6] = nGameAnswer[0][3];
+            nGameAnswer[3][2] = nGameAnswer[0][3];
+            nGameAnswer[4][8] = nGameAnswer[0][3];
+            nGameAnswer[5][5] = nGameAnswer[0][3];
+            nGameAnswer[6][1] = nGameAnswer[0][3];
+            nGameAnswer[7][7] = nGameAnswer[0][3];
+            nGameAnswer[8][4] = nGameAnswer[0][3];
+
+            nGame[1][0] = nGame[0][3];
+            nGame[2][6] = nGame[0][3];
+            nGame[3][2] = nGame[0][3];
+            nGame[4][8] = nGame[0][3];
+            nGame[5][5] = nGame[0][3];
+            nGame[6][1] = nGame[0][3];
+            nGame[7][7] = nGame[0][3];
+            nGame[8][4] = nGame[0][3];
+        }
+        //if the location is 0,4 then certain other locations are also set to the same number
+        else if(loca.equals(0,4))
+        {
+            nGameAnswer[1][1] = nGameAnswer[0][4];
+            nGameAnswer[2][7] = nGameAnswer[0][4];
+            nGameAnswer[3][3] = nGameAnswer[0][4];
+            nGameAnswer[4][0] = nGameAnswer[0][4];
+            nGameAnswer[5][6] = nGameAnswer[0][4];
+            nGameAnswer[6][2] = nGameAnswer[0][4];
+            nGameAnswer[7][8] = nGameAnswer[0][4];
+            nGameAnswer[8][5] = nGameAnswer[0][4];
+
+            nGame[1][1] = nGame[0][4];
+            nGame[2][7] = nGame[0][4];
+            nGame[3][3] = nGame[0][4];
+            nGame[4][0] = nGame[0][4];
+            nGame[5][6] = nGame[0][4];
+            nGame[6][2] = nGame[0][4];
+            nGame[7][8] = nGame[0][4];
+            nGame[8][5] = nGame[0][4];
+        }
+        //if the location is 0,5 then certain other locations are also set to the same number
+        else  if(loca.equals(0,5))
+        {
+            nGameAnswer[1][2] = nGameAnswer[0][5];
+            nGameAnswer[2][8] = nGameAnswer[0][5];
+            nGameAnswer[3][4] = nGameAnswer[0][5];
+            nGameAnswer[4][1] = nGameAnswer[0][5];
+            nGameAnswer[5][7] = nGameAnswer[0][5];
+            nGameAnswer[6][3] = nGameAnswer[0][5];
+            nGameAnswer[7][0] = nGameAnswer[0][5];
+            nGameAnswer[8][6] = nGameAnswer[0][5];
+
+            nGame[1][2] = nGame[0][5];
+            nGame[2][8] = nGame[0][5];
+            nGame[3][4] = nGame[0][5];
+            nGame[4][1] = nGame[0][5];
+            nGame[5][7] = nGame[0][5];
+            nGame[6][3] = nGame[0][5];
+            nGame[7][0] = nGame[0][5];
+            nGame[8][6] = nGame[0][5];
+        }
+        //if the location is 0,6 then certain other locations are also set to the same number
+        else  if(loca.equals(0,6))
+        {
+            nGameAnswer[1][3] = nGameAnswer[0][6];
+            nGameAnswer[2][0] = nGameAnswer[0][6];
+            nGameAnswer[3][5] = nGameAnswer[0][6];
+            nGameAnswer[4][2] = nGameAnswer[0][6];
+            nGameAnswer[5][8] = nGameAnswer[0][6];
+            nGameAnswer[6][4] = nGameAnswer[0][6];
+            nGameAnswer[7][1] = nGameAnswer[0][6];
+            nGameAnswer[8][7] = nGameAnswer[0][6];
+
+            nGame[1][3] = nGame[0][6];
+            nGame[2][0] = nGame[0][6];
+            nGame[3][5] = nGame[0][6];
+            nGame[4][2] = nGame[0][6];
+            nGame[5][8] = nGame[0][6];
+            nGame[6][4] = nGame[0][6];
+            nGame[7][1] = nGame[0][6];
+            nGame[8][7] = nGame[0][6];
+
+        }
+        //if the location is 0,7 then certain other locations are also set to the same number
+        else  if(loca.equals(0,7))
+        {
+            nGameAnswer[1][4] = nGameAnswer[0][7];
+            nGameAnswer[2][1] = nGameAnswer[0][7];
+            nGameAnswer[3][6] = nGameAnswer[0][7];
+            nGameAnswer[4][3] = nGameAnswer[0][7];
+            nGameAnswer[5][0] = nGameAnswer[0][7];
+            nGameAnswer[6][5] = nGameAnswer[0][7];
+            nGameAnswer[7][2] = nGameAnswer[0][7];
+            nGameAnswer[8][8] = nGameAnswer[0][7];
+
+            nGame[1][4] = nGame[0][7];
+            nGame[2][1] = nGame[0][7];
+            nGame[3][6] = nGame[0][7];
+            nGame[4][3] = nGame[0][7];
+            nGame[5][0] = nGame[0][7];
+            nGame[6][5] = nGame[0][7];
+            nGame[7][2] = nGame[0][7];
+            nGame[8][8] = nGame[0][7];
+
+        }
+        //if the location is 0,8 then certain other locations are also set to the same number
+        else if(loca.equals(0,8))
+        {
+            nGameAnswer[1][5] = nGameAnswer[0][8];
+            nGameAnswer[2][2] = nGameAnswer[0][8];
+            nGameAnswer[3][7] = nGameAnswer[0][8];
+            nGameAnswer[4][4] = nGameAnswer[0][8];
+            nGameAnswer[5][1] = nGameAnswer[0][8];
+            nGameAnswer[6][6] = nGameAnswer[0][8];
+            nGameAnswer[7][3] = nGameAnswer[0][8];
+            nGameAnswer[8][0] = nGameAnswer[0][8];
+
+            nGame[1][5] = nGame[0][8];
+            nGame[2][2] = nGame[0][8];
+            nGame[3][7] = nGame[0][8];
+            nGame[4][4] = nGame[0][8];
+            nGame[5][1] = nGame[0][8];
+            nGame[6][6] = nGame[0][8];
+            nGame[7][3] = nGame[0][8];
+            nGame[8][0] = nGame[0][8];
+        }
+    }
+    //==============================================================================================================================================
+    //this is the method which creates a sudoku game. Meaning, it randomly selects locations from the created sudoku grid and sets them to 0
+    //so that they are displayed as blank to the user
+    public void createGame()
+    {
+        for(int x = 0; x < 44; x ++)
+        {
+            Random rndm = new Random();
+            int r = rndm.nextInt(9);
+            int c = rndm.nextInt(9);
+
+            if(!(nGame[r][c] == 0))
+            {
+                nGame[r][c] = 0;
+
+            }
+            else
+            {
+                x--;
+            }
+        }
+
+
+    }
+    //==============================================================================================================================================
+    //this is a boolean method which returns true if the row of the location contains x, false if it does not
+    public boolean checkRow(Location loc, int x)
+    {
+        boolean hasNum = false;
+        int rowCheck = loc.a;
+
+        for (int c = 0; c < 9; c++)
+        {
+            if (nGameAnswer[rowCheck][c] == x)
+            {
+                hasNum = true;
+                break;
+            }
+        }
+        return hasNum;
+    }
+
+    //=============================================================================================================================================
+    //this is a boolean method which returns true if the column of the location contains x, false if it does not
+    public boolean checkColumn(Location loc, int x)
+    {
+        boolean hasNum = false;
+        int columnCheck = loc.b;
+
+
+        for (int r = 0; r < 9; r++)
+        {
+            if (nGameAnswer[r][columnCheck] == x)
+            {
+                hasNum = true;
+                break;
+            }
+        }
+        return hasNum;
+    }
+
+    //=============================================================================================================================================
+    //this is a boolean method which returns true if the box of the location contains x, false if it does not
+    public boolean checkBox(Location loc, int x )
+    {
+        int row = loc.a;
+        int col = loc.b;
+
+        boolean hasNum = false;
+
+        //The code in this if conditional is what is used for these locations
+        if (loc.equals(0,0) || loc.equals(3,0) || loc.equals(6,0) || loc.equals(0,3) || loc.equals(3,3) || loc.equals(6,3) ||
+                loc.equals(0,6) || loc.equals(3,6) || loc.equals(6,6))
+        {
+            outerLoop: for (int r = 0; r < 3; r++)
+            {
+                for (int c = 0; c < 3; c++)
+                {
+                    if (nGameAnswer[row + r][c + col] == x)
+                    {
+                        hasNum = true;
+                        break outerLoop;
+                    }
+                }
+            }
+        }
+        //The code in this if conditional is what is used for these locations
+        else if (loc.equals(0,1) || loc.equals(3,1) || loc.equals(6,1) || loc.equals(0,4) || loc.equals(3,4) || loc.equals(6,4) ||
+                loc.equals(0,7) || loc.equals(3,7) || loc.equals(6,7))
+        {
+            outerLoop: for (int r = 0; r < 3; r++)
+            {
+                for (int c = 0; c < 3; c++)
+                { if (nGameAnswer[row + r][(col - 1) + c] == x)
+                {
+                    hasNum = true;
+                    break outerLoop;
+                }
+                }
+            }
+        }
+        //The code in this if conditional is what is used for these locations
+        else if (loc.equals(0,2) || loc.equals(3,2) || loc.equals(6,2) || loc.equals(0,5) || loc.equals(3,5) || loc.equals(6,5) ||
+                loc.equals(0,8) || loc.equals(3,8) || loc.equals(6,8))
+        {
+            outerLoop: for (int r = 0; r < 3; r++)
+            {
+                for (int c = 0; c < 3; c++)
+                {
+                    if (nGame[row + r][(col - 2) + c] == x)
+                    {
+                        hasNum = true;
+
+                        break outerLoop;
+                    }
+                }
+            }
+        }
+
+        //The code in this if conditional is what is used for these locations
+        else if (loc.equals(1,0) || loc.equals(4,0) || loc.equals(7,0) || loc.equals(1,3) || loc.equals(4,3) || loc.equals(7,3) ||
+                loc.equals(1,6) || loc.equals(4,6) || loc.equals(7,6))
+        {
+            outerLoop: for (int r = 0; r < 3; r++)
+            {
+                for (int c = 0; c < 3; c++)
+                {
+                    if (nGame[(row - 1) + r][col + c] == x)
+                    {
+                        hasNum = true;
+                        break outerLoop;
+                    }
+                }
+            }
+
+        }
+        //The code in this if conditional is what is used for these locations
+        else if (loc.equals(1,1) || loc.equals(4,1) || loc.equals(7,1) || loc.equals(1,4) || loc.equals(4,4) || loc.equals(7,4) ||
+                loc.equals(1,7) || loc.equals(4,7) || loc.equals(7,7))
+        {
+            outerLoop: for (int r = 0; r < 3; r++)
+            {
+                for (int c = 0; c < 3; c++)
+                {
+                    if (nGame[(row - 1) + r][(col -1) + c] == x)
+                    {
+                        hasNum = true;
+                        break outerLoop;
+                    }
+                }
+            }
+
+        }
+        //The code in this if conditional is what is used for these locations
+        else if (loc.equals(1,2) || loc.equals(4,2) || loc.equals(7,2) || loc.equals(1,5) || loc.equals(4,5) || loc.equals(7,5) ||
+                loc.equals(1,8) || loc.equals(4,8) || loc.equals(7,8))
+        {
+            outerLoop: for (int r = 0; r < 3; r++)
+            {
+                for (int c = 0; c < 3; c++)
+                {
+                    if (nGameAnswer[(row - 1) + r][(col -2) + c] == x)
+                    {
+                        hasNum = true;
+                        break outerLoop;
+                    }
+                }
+            }
+
+        }
+
+        //The code in this if conditional is what is used for these locations
+        else if (loc.equals(2,0) || loc.equals(5,0) || loc.equals(8,0) || loc.equals(2,3) || loc.equals(5,3) || loc.equals(8,3) ||
+                loc.equals(2,6) || loc.equals(5,6) || loc.equals(8,6))
+        {
+
+            outerLoop: for (int r = 0; r < 3; r++)
+            {
+                for (int c = 0; c < 3; c++)
+                {
+                    if (nGameAnswer[(row - 2) + r][col + c] == x)
+                    {
+                        hasNum = true;
+
+                        break  outerLoop ;
+                    }
+                }
+            }
+        }
+
+        //The code in this if conditional is what is used for these locations
+        else if (loc.equals(2,1) || loc.equals(5,1) || loc.equals(8,1) || loc.equals(2,4) || loc.equals(5,4) || loc.equals(8,4) ||
+                loc.equals(2,7) || loc.equals(5,7) || loc.equals(8,7))
+        {
+
+            outerLoop: for (int r = 0; r < 3; r++)
+            {
+                for (int c = 0; c < 3; c++)
+                {
+                    if (nGameAnswer[(row - 2) + r][(col-1) + c] == x)
+                    {
+                        hasNum = true;
+                        break outerLoop;
+                    }
+                }
+            }
+        }
+        //The code in this if conditional is what is used for these locations
+        else if (loc.equals(2,2) || loc.equals(5,2) || loc.equals(8,2) || loc.equals(2,5) || loc.equals(5,5) || loc.equals(8,5) ||
+                loc.equals(2,8) || loc.equals(5,8) || loc.equals(8,8))
+        {
+
+            outerLoop: for (int r = 0; r < 3; r++)
+            {
+                for (int c = 0; c < 3; c++)
+                {
+                    if (nGameAnswer[(row - 2) + r][(col-2) + c] == x)
+                    {
+                        hasNum = true;
+                        break outerLoop;
+                    }
+                }
+            }
+
+        }
+
+        return hasNum;
+    }
+
+    //=============================================================================================================================================
+    //this is a boolean method which returns true if the neigboring rows of the location contains x, false if it does not
+    public boolean checkNRows(Location loc, int x )
+    {
+        int row = loc.a;
+
+        boolean hasNum1 = false;
+        boolean hasNum2 = false;
+
+        //The code in this if conditional is what is used for these locations
+        if (loc.equals(0,0) || loc.equals(0,1) || loc.equals(0,2) || loc.equals(0,3) || loc.equals(0,4) || loc.equals(0,5) || loc.equals(0,6)
+                || loc.equals(0,7) || loc.equals(0,8) || loc.equals(3,0) || loc.equals(3,1) || loc.equals(3,2) || loc.equals(3,3) ||
+                loc.equals(3,4)||loc.equals(3,5) || loc.equals(3,6) || loc.equals(3,7) || loc.equals(3,8) ||loc.equals(6,0) || loc.equals(6,1) ||
+                loc.equals(6,2) ||loc.equals(6,3) || loc.equals(6,4) ||loc.equals(6,5) || loc.equals(6,6) || loc.equals(6,7) || loc.equals(6,8))
+        {
+            for (int c = 0; c < 9; c++)
+            {
+                if (nGameAnswer[row + 1][c] == x)
+                {
+                    hasNum1 = true;
+                    break;
+                }
+            }
+
+            for (int c = 0; c < 9; c++)
+            {
+                if (nGameAnswer[row + 2][c] == x)
+                {
+                    hasNum2 = true;
+                    break;
+                }
+
+            }
+        }
+        //The code in this if conditional is what is used for these locations
+        else if (loc.equals(1,0) || loc.equals(1,1) || loc.equals(1,2) || loc.equals(1,3) || loc.equals(1,4) || loc.equals(1,5) || loc.equals(1,6)
+                || loc.equals(1,7) || loc.equals(1,8) || loc.equals(4,0) || loc.equals(4,1) || loc.equals(4,2) || loc.equals(4,3) ||
+                loc.equals(4,4)||loc.equals(4,5) || loc.equals(4,6) || loc.equals(4,7) || loc.equals(4,8) ||loc.equals(7,0) || loc.equals(7,1) ||
+                loc.equals(7,2) ||loc.equals(7,3) || loc.equals(7,4) ||loc.equals(7,5) || loc.equals(7,6) || loc.equals(7,7) || loc.equals(7,8))
+        {
+
+            for (int c = 0; c < 9; c++)
+            {
+                if (nGameAnswer[row - 1][c] == x)
+                {
+                    hasNum1 = true;
+                    break;
+                }
+            }
+
+            for (int c = 0; c < 9; c++)
+            {
+                if (nGameAnswer[row + 1][c] == x)
+                {
+                    hasNum2 = true;
+                    break;
+                }
+
+            }
+        }
+        //The code in this if conditional is what is used for these locations
+        else if (loc.equals(2,0) || loc.equals(2,1) || loc.equals(2,2) || loc.equals(2,3) || loc.equals(2,4) || loc.equals(2,5) || loc.equals(2,6)
+                || loc.equals(2,7) || loc.equals(2,8) || loc.equals(5,0) || loc.equals(5,1) || loc.equals(5,2) || loc.equals(5,3) ||
+                loc.equals(5,4)||loc.equals(5,5) || loc.equals(5,6) || loc.equals(5,7) || loc.equals(5,8) ||loc.equals(8,0) || loc.equals(8,1) ||
+                loc.equals(8,2) ||loc.equals(8,3) || loc.equals(8,4) ||loc.equals(8,5) || loc.equals(8,6) || loc.equals(8,7) || loc.equals(8,8))
+        {
+
+            for (int c = 0; c < 9; c++)
+            {
+                if (nGameAnswer[row - 1][c] == x)
+                {
+                    hasNum1 = true;
+                    break;
+                }
+            }
+
+            for (int c = 0; c < 9; c++)
+            {
+                if (nGameAnswer[row - 2][c] == x)
+                {
+                    hasNum2 = true;
+                    break;
+                }
+
+            }
+        }
+
+
+        if (hasNum1 && hasNum2)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
+    }
+    //=============================================================================================================================================
+    //this is a boolean method which returns true if the neigboring columns of the location contains x, false if it does not
+    public boolean checkNCols(Location loc, int x )
+    {
+        int col = loc.b;
+
+        boolean hasNum1 = false;
+        boolean hasNum2 = false;
+
+        //The code in this if conditional is what is used for these locations
+        if (loc.equals(0,0) || loc.equals(1,0) || loc.equals(2,0) || loc.equals(3,0) || loc.equals(4,0) || loc.equals(5,0) || loc.equals(6,0) ||
+                loc.equals(7,0) || loc.equals(8,0) || loc.equals(0,3) || loc.equals(1,3) || loc.equals(2,3) || loc.equals(3,3) ||
+                loc.equals(4,3)||loc.equals(5,3) || loc.equals(6,3) || loc.equals(7,3) || loc.equals(8,3) ||loc.equals(0,6) || loc.equals(1,6) ||
+                loc.equals(2,6) ||loc.equals(3,6) || loc.equals(4,6) ||loc.equals(5,6) || loc.equals(6,6) || loc.equals(7,6) || loc.equals(8,6))
+        {
+            for (int r = 0; r < 9; r++)
+            {
+                if (nGameAnswer[r][col + 1] == x)
+                {
+                    hasNum1 = true;
+                    break;
+                }
+            }
+
+            for (int r = 0; r < 9; r++)
+            {
+                if (nGameAnswer[r][col +2] == x)
+                {
+                    hasNum2 = true;
+                    break;
+                }
+
+            }
+        }
+        //The code in this if conditional is what is used for these locations
+        else if (loc.equals(0,1) || loc.equals(1,1) || loc.equals(2,1) || loc.equals(3,1) || loc.equals(4,1) || loc.equals(5,1) || loc.equals(6,1)
+                || loc.equals(7,1) || loc.equals(8,1) || loc.equals(0,4) || loc.equals(1,4) || loc.equals(2,4) || loc.equals(3,4) ||
+                loc.equals(4,4)||loc.equals(5,4) || loc.equals(6,4) || loc.equals(7,4) || loc.equals(8,4) ||loc.equals(0,7) || loc.equals(1,7) ||
+                loc.equals(2,7) ||loc.equals(3,7) || loc.equals(4,7) ||loc.equals(5,7) || loc.equals(6,7) || loc.equals(7,7) || loc.equals(8,7))
+        {
+            for (int r = 0; r < 9; r++)
+            {
+                if (nGameAnswer[r][col -1] == x)
+                {
+                    hasNum1 = true;
+                    break;
+                }
+            }
+
+            for (int r = 0; r < 9; r++)
+            {
+                if (nGameAnswer[r][col +1] == x)
+                {
+                    hasNum2 = true;
+                    break;
+                }
+
+            }
+
+        }
+        //The code in this if conditional is what is used for these locations
+        else if (loc.equals(0,2) || loc.equals(1,2) || loc.equals(2,2) || loc.equals(3,2) || loc.equals(4,2) || loc.equals(5,2) || loc.equals(6,2)
+                ||  loc.equals(7,2) || loc.equals(8,2) || loc.equals(0,5) || loc.equals(1,5) || loc.equals(2,5) || loc.equals(3,5) ||
+                loc.equals(4,5)||loc.equals(5,5) || loc.equals(6,5) || loc.equals(7,5) || loc.equals(8,5) ||loc.equals(0,8) || loc.equals(1,8) ||
+                loc.equals(2,8) ||loc.equals(3,8) || loc.equals(4,8) ||loc.equals(5,8) || loc.equals(6,8) || loc.equals(7,8) || loc.equals(8,8))
+        {
+            for (int r = 0; r < 9; r++)
+            {
+                if (nGameAnswer[r][col - 1] == x)
+                {
+                    hasNum1 = true;
+                    break;
+                }
+            }
+
+            for (int r = 0; r < 9; r++)
+            {
+                if (nGameAnswer[r][col - 2] == x)
+                {
+                    hasNum2 = true;
+                    break;
+                }
+
+            }
+        }
+
+        if (hasNum1 && hasNum2)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    //=============================================================================================================================================
+    //this is the method which finds the empty locations and adds them to the oSpace arrayList
+    public void nextEmpty()
+    {
+        Location free = new Location();
+
+        for (int r = 0; r < 7; r ++)
+        {
+            for (int c = 0; c < 9; c++)
+            {
+                free = new Location (r,c);
+                oSpace.add(free);
+            }
+        }
+    }
+
+    //==============================================================================================================================================
+//each locationm has an arrayList of 1-9 as an property. According to the numbers which are already taken and are no longer valid for this
+    //location, the number is deleted from the arrayList
+    public void  editArray(Location locs)
+    {
+        int x = 0;
+        //ths method is only necassry is the location is on and not already filled out
+        if(nGameAnswer[locs.a][locs.b] == 0)
+        {
+            //this is the while loop which is used to make avoid an index out of bounds error
+            while( x< locs.getAL().size() && locs.getAL().size() > 0)
+            {
+                if(checkRow(locs,locs.getAL().get(x)) == true || checkColumn(locs,locs.getAL().get(x)) == true
+                        || checkBox(locs,locs.getAL().get(x)) == true )
+                {
+                    locs.remove(x);
+                    x = 0;
+                }
+                //if the size of the arrayList of the location is 1, then the number in the arrayList is set at that location
+                if (locs.getAL().size() == 1 && checkRow(locs,locs.getAL().get(0)) == false &&
+                        checkColumn(locs,locs.getAL().get(0)) == false && checkBox(locs,locs.getAL().get(0)) == false)
+                {
+                    nGameAnswer[locs.a][locs.b] = locs.getAL().get(0);
+
+                    nGame[locs.a][locs.b] = locs.getAL().get(0);
+
+                    int g = oSpace.indexOf(locs);
+
+                    placeSpecific(locs);
+
+                    break;
+                }
+                else
+                {x++;}
+            }
+        }
+    }
+
+//=============================================================================================================================================
+}
